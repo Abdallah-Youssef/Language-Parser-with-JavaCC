@@ -1,6 +1,6 @@
 package lab1;
 
-public class Test {
+public class Grammar {
 
 }
 /*
