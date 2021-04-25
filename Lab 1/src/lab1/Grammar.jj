@@ -1,0 +1,46 @@
+package lab1;
+PARSER_BEGIN(GRAMMAR)
+
+import java.io.StringReader;
+
+public class Grammar {
+  
+    public static void main(String[] args) throws Exception {
+      StringReader in=new StringReader("count 10");
+      Grammar hello=new Grammar(in);
+      Grammar.words();
+    }
+    
+}
+
+PARSER_END(GRAMMAR)
+
+
+
+SKIP: { " " |"\t" |"\n" |"\r" }
+
+TOKEN: { <Digit: ["0"-"9"] >  }
+TOKEN: { <Letter: ["a"-"f"] > }
+
+
+void Num():
+{
+  int id=0;
+}
+{
+  < Digit > Num() | < SKIP >
+}
+
+/*
+
+
+Digit   → 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+Letter → a | b | c | d | e | f
+Num   → Digit Num  |  ε
+Var     →  Letter Var  |  ε
+AExp  →  Num | Var | (AExp + AExp) | (AExp −AExp)
+BExp  →  tt | ff | (AExp == AExp) | ! BExp | (BExp ^ BExp)
+Com   →  skip | Var := AExp | Com; Com | if BExp then Com else Com | while BExp do Com
+
+
+*/
