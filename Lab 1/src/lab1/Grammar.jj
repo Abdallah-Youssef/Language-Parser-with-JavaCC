@@ -1,5 +1,5 @@
-package lab1;
-PARSER_BEGIN(GRAMMAR)
+PARSER_BEGIN(Grammar)
+package egtry.lab1;
 
 import java.io.StringReader;
 
@@ -8,12 +8,12 @@ public class Grammar {
     public static void main(String[] args) throws Exception {
       StringReader in=new StringReader("count 10");
       Grammar hello=new Grammar(in);
-      Grammar.words();
+      hello.start();
     }
     
 }
 
-PARSER_END(GRAMMAR)
+PARSER_END(Grammar)
 
 
 
@@ -21,15 +21,53 @@ SKIP: { " " |"\t" |"\n" |"\r" }
 
 TOKEN: { <Digit: ["0"-"9"] >  }
 TOKEN: { <Letter: ["a"-"f"] > }
-
+TOKEN: { < Bool: "ff" | "tt" > }
+TOKEN: { < Op: "(" > }
+TOKEN: { < Cl: ")" > }
+TOKEN: { < Add: "+" > }
+TOKEN: { < Min: "-" > }
+TOKEN: { < Eq: "==" > }
+TOKEN: { < Not: "!" > }
+TOKEN: { < And: "^" > }
 
 void Num():
+{}
 {
-  int id=0;
+  < Digit > ( Num() )*
+}
+
+void Var():
+{}
+{
+  < Letter > (Var())*
+}
+
+void AExp():
+{}
+{
+  Num() | Var() | < Op> AExp() < Add> AExp() <Cl > | < Op> AExp() < Min > AExp() <Cl >
+}
+
+void BExp():
+{}
+{
+	< Bool > | < Op> AExp() < Eq > AExp() <Cl > | < Not > BExp() | < Op> BExp() < And > BExp() <Cl >
+}
+
+/*void Com():
+{}
+{	  Var() ":=" AExp() | Com() ";" Com() | "if" BExp() "then" Com() "else" Com()| "while" BExp() "do" Com()
+}*/
+
+void start():
+{
 }
 {
-  < Digit > Num() | < SKIP >
+  ( AExp() | BExp())*
+  <EOF>
+ 
 }
+
 
 /*
 
