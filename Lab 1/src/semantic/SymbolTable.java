@@ -1,7 +1,6 @@
 package semantic;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,7 +31,7 @@ public class SymbolTable {
 		System.out.println("Map = ");
 	    Iterator<Entry<String, Integer>> it = map.entrySet().iterator();
 	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
+	        Map.Entry<String, Integer> pair = it.next();
 	        System.out.println(pair.getKey() + " = " + pair.getValue());
 	    }
 	}

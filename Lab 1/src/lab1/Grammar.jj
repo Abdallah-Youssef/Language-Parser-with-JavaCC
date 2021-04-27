@@ -5,9 +5,6 @@ COMMON_TOKEN_ACTION = true ;
 PARSER_BEGIN(Grammar)
 package lab1;
 
-import java.io.StringReader;
-import java.io.PrintStream;
-import java.util.Hashtable;
 import semantic.SymbolTable;
 public class Grammar {
 
@@ -134,7 +131,7 @@ void CommandChain():
 	
 }
 
-void Start(PrintStream printStream):
+void Start():
 {
 }
 {
