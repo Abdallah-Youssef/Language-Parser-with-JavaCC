@@ -1,70 +1,155 @@
+options {
+STATIC = false;
+COMMON_TOKEN_ACTION = true ;
+}
 PARSER_BEGIN(Grammar)
-package egtry.lab1;
+package lab1;
 
 import java.io.StringReader;
-
+import java.io.PrintStream;
+import java.util.Hashtable;
+import semantic.SymbolTable;
 public class Grammar {
-  
+
     public static void main(String[] args) throws Exception {
-      StringReader in=new StringReader("count 10");
+      /*StringReader in=new StringReader("count 10");
       Grammar hello=new Grammar(in);
-      hello.start();
+      hello.start();*/
+		
     }
+
     
+
 }
+
+
+
 
 PARSER_END(Grammar)
 
 
+TOKEN_MGR_DECLS : {
+void CommonTokenAction(Token token) {
+	//System.out.println("Token : " + token.image);
+}
+}
+
 
 SKIP: { " " |"\t" |"\n" |"\r" }
 
-TOKEN: { <Digit: ["0"-"9"] >  }
-TOKEN: { <Letter: ["a"-"f"] > }
-TOKEN: { < Bool: "ff" | "tt" > }
-TOKEN: { < Op: "(" > }
-TOKEN: { < Cl: ")" > }
-TOKEN: { < Add: "+" > }
-TOKEN: { < Min: "-" > }
-TOKEN: { < Eq: "==" > }
-TOKEN: { < Not: "!" > }
-TOKEN: { < And: "^" > }
+TOKEN: { <NUM: (["0"-"9"])+ >  }
+TOKEN: { <VAR: (["a"-"f"])+ > }
+TOKEN: { < BOOL: "ff" | "tt" > }
+TOKEN: { < OP: "(" > }
+TOKEN: { < CL: ")" > }
+TOKEN: { < ADD: "+" > }
+TOKEN: { < MIN: "-" > }
+TOKEN: { < EQUAL: "==" > }
+TOKEN: { < NOT: "!" > }
+TOKEN: { < AND: "^" > }
 
-void Num():
-{}
+
+Integer AExp() :
 {
-  < Digit > ( Num() )*
-}
-
-void Var():
-{}
-{
-  < Letter > (Var())*
-}
-
-void AExp():
-{}
-{
-  Num() | Var() | < Op> AExp() < Add> AExp() <Cl > | < Op> AExp() < Min > AExp() <Cl >
-}
-
-void BExp():
-{}
-{
-	< Bool > | < Op> AExp() < Eq > AExp() <Cl > | < Not > BExp() | < Op> BExp() < And > BExp() <Cl >
-}
-
-/*void Com():
-{}
-{	  Var() ":=" AExp() | Com() ";" Com() | "if" BExp() "then" Com() "else" Com()| "while" BExp() "do" Com()
-}*/
-
-void start():
-{
+	Integer a, b;
+	Integer result;
+	Token t;
 }
 {
-  ( AExp() | BExp())*
+	t = < NUM >
+	{ return Integer.parseInt(t.image);}
+|
+	t = < VAR >
+	{
+	  return SymbolTable.get(t.image);
+	}
+|
+	LOOKAHEAD(3)
+	< OP> a = AExp() < ADD > b = AExp() <CL >
+	{
+	  System.out.println("Expression evaluated to: " + Integer.toString(a+b));
+	  return a + b;
+	}
+
+|
+	< OP> a = AExp() < MIN > b = AExp() <CL >
+  	{
+  	  	System.out.println("Expression evaluated to: " + Integer.toString(a-b));
+  		return a - b;
+  	}
+}
+
+Boolean BExp():
+{
+	Token t;
+	Integer x, y;
+	Boolean b_1, b_2;
+}
+{
+	t = < BOOL >
+	{ return t.image.equals("tt"); }
+	|
+
+	LOOKAHEAD(3)
+	< OP> x = AExp() < EQUAL > y = AExp() <CL >
+    { return x == y; }
+
+	|
+	 < NOT > b_1 = BExp()
+	{ return !b_1; }
+
+	|
+	 < OP> b_1 = BExp() < AND > b_2 = BExp() <CL >
+	{ return b_1 && b_2; }
+}
+
+void Command():
+{
+	Token var_name;
+	Integer value;
+}
+{
+	var_name = < VAR > ":="  value = AExp()
+	{
+		SymbolTable.set(var_name.image, value);
+		System.out.println(var_name + " value set to " + value);
+	}
+	  
+	
+	|
+
+	"if" BExp() "then" CommandChain() "else" CommandChain()
+
+	|
+
+	"while" BExp() "do" CommandChain()
+}
+
+void CommandChain():
+{ }
+{
+	Command() ";" CommandChain()
+	|
+	< EOF >
+	
+}
+
+void Start(PrintStream printStream):
+{
+}
+{
+
+/*
+  (
+    LOOKAHEAD(3)
+    AExp()
+    |
+    BExp()
+  )*
   <EOF>
+
+*/
+	CommandChain()
  
 }
 
