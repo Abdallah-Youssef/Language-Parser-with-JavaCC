@@ -52,7 +52,7 @@ public class Visitor implements GrammarVisitor {
 		String value = (String)node.jjtGetValue();
 		
 		if (value.equals("!")) {
-			return (Boolean) node.jjtGetChild(0).jjtAccept(this, data);
+			return !(Boolean) node.jjtGetChild(0).jjtAccept(this, data);
 		}
 		else if (value.equals("==")) {
 			return (Integer)node.jjtGetChild(0).jjtAccept(this, data) ==
@@ -106,5 +106,6 @@ public class Visitor implements GrammarVisitor {
 		SymbolTable.printMap();
 		return SymbolTable.map;
 	}
+
 
 }

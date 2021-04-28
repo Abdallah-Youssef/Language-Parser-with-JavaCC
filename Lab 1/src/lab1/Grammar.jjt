@@ -47,9 +47,11 @@ void CommonTokenAction(Token token) {
 
 SKIP: { " " |"\t" |"\n" |"\r" }
 
+TOKEN: { < FALSE: "ff" > }
+TOKEN: { < TRUE: "tt" > }
+
 TOKEN: { <NUM: (["0"-"9"])+ >  }
-TOKEN: { <VAR: (["a"-"f"])+ > }
-TOKEN: { < BOOL: "ff" | "tt" > }
+TOKEN: { <VAR:(["a"-"f"])+  > }
 TOKEN: { < OP: "(" > }
 TOKEN: { < CL: ")" > }
 TOKEN: { < ADD: "+" > }
@@ -59,10 +61,10 @@ TOKEN: { < NOT: "!" > }
 TOKEN: { < AND: "^" > }
 
 
+
 void AExp() :
 {
 	Token t;
-	
 }
 {
 	t = < NUM >
@@ -85,7 +87,12 @@ void BExp():
 	Token t;
 }
 {
-	t = < BOOL >
+	t = <  TRUE >
+	{ jjtThis.jjtSetValue(t.image);}
+	
+	|
+
+	t = <  FALSE >
 	{ jjtThis.jjtSetValue(t.image);}
 	
 	|
@@ -109,13 +116,7 @@ void Command():
 	Token t;
 }
 {
-	t = < VAR > ":="  AExp()
-	{
-	  	System.out.println("Heyy, " + t.image  );
-		jjtThis.jjtSetValue(t.image);
-	}
-	
-	|
+
 
 	"if" BExp() "then" CommandChain() "else" CommandChain()
 	{  jjtThis.jjtSetValue("if");}
@@ -124,14 +125,23 @@ void Command():
 
 	"while" BExp() "do" CommandChain()
 	{  jjtThis.jjtSetValue("while");}
+
+| 
+		t = < VAR > ":="  AExp()  ";"
+	{
+		jjtThis.jjtSetValue(t.image);
+	}
+	
+	
 }
+
+
 
 void CommandChain():
 { }
 {
-	Command() ";" CommandChain()
-	|
-	< EOF >
+	Command() (CommandChain())*
+	
 	
 }
 
@@ -152,6 +162,7 @@ SimpleNode Start():
 */
 	CommandChain()
  	{return jjtThis;}
+
 }
 
 /*
