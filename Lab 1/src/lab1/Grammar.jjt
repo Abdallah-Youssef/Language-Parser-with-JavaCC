@@ -1,19 +1,32 @@
 options {
+  VISITOR = true;
+  MULTI = true;
 STATIC = false;
 COMMON_TOKEN_ACTION = true ;
 }
 PARSER_BEGIN(Grammar)
 package lab1;
 
-import semantic.SymbolTable;
+import java.io.StringReader;
+import semantic.Visitor;
+
+
 public class Grammar {
 
-    public static void main(String[] args) throws Exception {
-      /*StringReader in=new StringReader("count 10");
-      Grammar hello=new Grammar(in);
-      hello.start();*/
+	public static void main(String[] args) throws Exception {
+		StringReader in=new StringReader("a := 45;b := 23;a := ((b+a) + (5 - 3)  );");
+		Grammar g = new Grammar(in);
+		try {
+			SimpleNode n = g.Start();
+			//n.dump("");
+			n.jjtAccept(new Visitor(), null);
+			System.out.println("Thanks!!");
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
 		
-    }
+	}
 
     
 
@@ -46,80 +59,71 @@ TOKEN: { < NOT: "!" > }
 TOKEN: { < AND: "^" > }
 
 
-Integer AExp() :
+void AExp() :
 {
-	Integer a, b;
-	Integer result;
 	Token t;
+	
 }
 {
 	t = < NUM >
-	{ return Integer.parseInt(t.image);}
+	{ jjtThis.jjtSetValue(t.image);}
 |
-	t = < VAR >
-	{
-	  return SymbolTable.get(t.image);
-	}
+	t = <  VAR >
+	{  jjtThis.jjtSetValue(t.image);}
 |
 	LOOKAHEAD(3)
-	< OP> a = AExp() < ADD > b = AExp() <CL >
-	{
-	  System.out.println("Expression evaluated to: " + Integer.toString(a+b));
-	  return a + b;
-	}
+	< OP> AExp() < ADD > AExp() <CL >
+	{  jjtThis.jjtSetValue("+");}
 
 |
-	< OP> a = AExp() < MIN > b = AExp() <CL >
-  	{
-  	  	System.out.println("Expression evaluated to: " + Integer.toString(a-b));
-  		return a - b;
-  	}
+	< OP> AExp() < MIN > AExp() <CL >
+	{ jjtThis.jjtSetValue("-");}
 }
 
-Boolean BExp():
+void BExp():
 {
 	Token t;
-	Integer x, y;
-	Boolean b_1, b_2;
 }
 {
 	t = < BOOL >
-	{ return t.image.equals("tt"); }
+	{ jjtThis.jjtSetValue(t.image);}
+	
 	|
 
 	LOOKAHEAD(3)
-	< OP> x = AExp() < EQUAL > y = AExp() <CL >
-    { return x == y; }
+	< OP> AExp() < EQUAL > AExp() <CL >
+	{  jjtThis.jjtSetValue("==");}
+	
+	|
+	
+	 < NOT > BExp()
+	 {  jjtThis.jjtSetValue("!");}
 
 	|
-	 < NOT > b_1 = BExp()
-	{ return !b_1; }
-
-	|
-	 < OP> b_1 = BExp() < AND > b_2 = BExp() <CL >
-	{ return b_1 && b_2; }
+	 < OP> BExp() < AND >  BExp() <CL >
+	 {  jjtThis.jjtSetValue("^");}
 }
 
 void Command():
 {
-	Token var_name;
-	Integer value;
+	Token t;
 }
 {
-	var_name = < VAR > ":="  value = AExp()
+	t = < VAR > ":="  AExp()
 	{
-		SymbolTable.set(var_name.image, value);
-		System.out.println(var_name + " value set to " + value);
+	  	System.out.println("Heyy, " + t.image  );
+		jjtThis.jjtSetValue(t.image);
 	}
-	  
 	
 	|
 
 	"if" BExp() "then" CommandChain() "else" CommandChain()
+	{  jjtThis.jjtSetValue("if");}
 
 	|
 
 	"while" BExp() "do" CommandChain()
+	{  jjtThis.jjtSetValue("while");}
 }
 
 void CommandChain():
@@ -131,7 +135,7 @@ void CommandChain():
 	
 }
 
-void Start():
+SimpleNode Start():
 {
 }
 {
@@ -147,9 +151,8 @@ void Start():
 
 */
 	CommandChain()
- 
+ 	{return jjtThis;}
 }
-
 
 /*
 

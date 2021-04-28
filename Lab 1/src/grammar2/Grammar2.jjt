@@ -1,0 +1,168 @@
+options {
+  VISITOR = true;
+  MULTI = true;
+STATIC = false;
+COMMON_TOKEN_ACTION = true ;
+}
+PARSER_BEGIN(Grammar)
+package grammar2;
+
+import java.io.StringReader;
+
+public class Grammar {
+
+	public static void main(String[] args) throws Exception {
+		StringReader in=new StringReader("a := 45;b := 23;a := ((b+a) + (5 - 3)  );");
+		Grammar g = new Grammar(in);
+		try {
+			SimpleNode n = g.Start();
+			//n.dump("");
+			n.jjtAccept(new Visitor(), null);
+			System.out.println("Thanks!!");
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		
+	}
+
+    
+
+}
+
+
+
+
+PARSER_END(Grammar)
+
+
+TOKEN_MGR_DECLS : {
+void CommonTokenAction(Token token) {
+	//System.out.println("Token : " + token.image);
+}
+}
+
+
+SKIP: { " " |"\t" |"\n" |"\r" }
+
+TOKEN: { <NUM: (["0"-"9"])+ >  }
+TOKEN: { <VAR: (["a"-"f"])+ > }
+TOKEN: { < BOOL: "ff" | "tt" > }
+TOKEN: { < OP: "(" > }
+TOKEN: { < CL: ")" > }
+TOKEN: { < ADD: "+" > }
+TOKEN: { < MIN: "-" > }
+TOKEN: { < EQUAL: "==" > }
+TOKEN: { < NOT: "!" > }
+TOKEN: { < AND: "^" > }
+
+
+void AExp() :
+{
+	Token t;
+	
+}
+{
+	t = < NUM >
+	{ jjtThis.jjtSetValue(t.image);}
+|
+	t = <  VAR >
+	{  jjtThis.jjtSetValue(t.image);}
+|
+	LOOKAHEAD(3)
+	< OP> AExp() < ADD > AExp() <CL >
+	{  jjtThis.jjtSetValue("+");}
+
+|
+	< OP> AExp() < MIN > AExp() <CL >
+	{ jjtThis.jjtSetValue("-");}
+}
+
+void BExp():
+{
+	Token t;
+}
+{
+	t = < BOOL >
+	{ jjtThis.jjtSetValue(t.image);}
+	
+	|
+
+	LOOKAHEAD(3)
+	< OP> AExp() < EQUAL > AExp() <CL >
+	{  jjtThis.jjtSetValue("==");}
+	
+	|
+	
+	 < NOT > BExp()
+	 {  jjtThis.jjtSetValue("!");}
+
+	|
+	 < OP> BExp() < AND >  BExp() <CL >
+	 {  jjtThis.jjtSetValue("^");}
+}
+
+void Command():
+{
+	Token t;
+}
+{
+	t = < VAR > ":="  AExp()
+	{
+	  	System.out.println("Heyy, " + t.image  );
+		jjtThis.jjtSetValue(t.image);
+	}
+	
+	|
+
+	"if" BExp() "then" CommandChain() "else" CommandChain()
+	{  jjtThis.jjtSetValue("if");}
+
+	|
+
+	"while" BExp() "do" CommandChain()
+	{  jjtThis.jjtSetValue("while");}
+}
+
+void CommandChain():
+{ }
+{
+	Command() ";" CommandChain()
+	|
+	< EOF >
+	
+}
+
+SimpleNode Start():
+{
+}
+{
+
+/*
+  (
+    LOOKAHEAD(3)
+    AExp()
+    |
+    BExp()
+  )*
+  <EOF>
+
+*/
+	CommandChain()
+ 	{return jjtThis;}
+}
+
+
+/*
+
+
+Digit   → 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+Letter → a | b | c | d | e | f
+Num   → Digit Num  |  ε
+Var     →  Letter Var  |  ε
+AExp  →  Num | Var | (AExp + AExp) | (AExp −AExp)
+BExp  →  tt | ff | (AExp == AExp) | ! BExp | (BExp ^ BExp)
+Com   →  skip | Var := AExp | Com; Com | if BExp then Com else Com | while BExp do Com
+
+
+*/

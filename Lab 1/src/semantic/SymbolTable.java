@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import lab1.ParseException;
+
 
 public class SymbolTable {
 	static HashMap<String, Integer> map = new HashMap<>();

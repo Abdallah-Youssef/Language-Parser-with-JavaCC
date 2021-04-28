@@ -5,7 +5,7 @@
 /SimpleCharStream.java
 /Token.java
 /TokenMgrError.java
-/Grammar.jj
+/Grammar2.jj
 /GrammarTreeConstants.java
 /GrammarVisitor.java
 /JJTGrammarState.java
