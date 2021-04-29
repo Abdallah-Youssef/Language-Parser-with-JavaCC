@@ -60,7 +60,7 @@ public class Visitor implements GrammarVisitor {
 			return (Integer)node.jjtGetChild(0).jjtAccept(this, data) ==
 				   (Integer)node.jjtGetChild(1).jjtAccept(this, data);
 		}else if (value.equals("^")) {
-			return (Boolean)node.jjtGetChild(0).jjtAccept(this, data) ^
+			return (Boolean)node.jjtGetChild(0).jjtAccept(this, data) &&
 				   (Boolean)node.jjtGetChild(1).jjtAccept(this, data);
 		}else {
 			return value.equals("tt");
