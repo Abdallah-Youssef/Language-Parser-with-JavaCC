@@ -107,6 +107,8 @@ void BExp():
 	 {  jjtThis.jjtSetValue("!");}
 
 	|
+
+	LOOKAHEAD(3)
 	 < OP> BExp() < AND >  BExp() <CL >
 	 {  jjtThis.jjtSetValue("^");}
 }

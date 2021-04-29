@@ -296,7 +296,7 @@ class EvaluatingTest {
 	void IF3() {
 		
 		StringReader in=new StringReader(
-				"b := 2; c:= 4; if ( tt ^ (3 == 3)) then f:=(c + b); else f:=(c - b);");
+				"b := 2; c:= 4; if ( tt ^ (b == c)) then f:=(c + b); else f:=(c - b);");
 		Grammar g =new Grammar(in);
 		
 		HashMap<String, Integer> map_correct = new HashMap<>(){{
