@@ -25,7 +25,7 @@ class CommandChains {
 		
 		
 		HashMap<String, Integer> map_correct = new HashMap<>(){{
-			put("a", 0);
+			put("a",0);
 			
 		}};
 		/**

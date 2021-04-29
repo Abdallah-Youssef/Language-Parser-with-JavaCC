@@ -3,6 +3,8 @@ package semantic;
 import lab1.*;
 
 public class Visitor implements GrammarVisitor {
+	SymbolTable st = new SymbolTable();
+	
 	private boolean isNumeric(String strNum) {
 	    if (strNum == null) {
 	        return false;
@@ -37,7 +39,7 @@ public class Visitor implements GrammarVisitor {
 			return Integer.parseInt(value);
 		}else {
 			try {
-				return SymbolTable.get(value);
+				return st.get(value);
 			} catch (ParseException e) {
 				System.out.println(value + " is not defined");
 				return Integer.MIN_VALUE;
@@ -87,7 +89,7 @@ public class Visitor implements GrammarVisitor {
 			
 			
 		}else {
-			SymbolTable.set(value, (Integer)node.jjtGetChild(0).jjtAccept(this, data));
+			st.set(value, (Integer)node.jjtGetChild(0).jjtAccept(this, data));
 		}
 		
 		return null;
@@ -103,8 +105,8 @@ public class Visitor implements GrammarVisitor {
 	public Object visit(ASTStart node, Object data) {
 		node.childrenAccept(this, data);
 		
-		SymbolTable.printMap();
-		return SymbolTable.map;
+		st.printMap();
+		return st.map;
 	}
 
 

@@ -127,7 +127,7 @@ void Command():
 	{  jjtThis.jjtSetValue("while");}
 
 | 
-		t = < VAR > ":="  AExp()  ";"
+		t = < VAR > ":="  AExp() ";"
 	{
 		jjtThis.jjtSetValue(t.image);
 	}
