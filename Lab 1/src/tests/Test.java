@@ -1,6 +1,7 @@
 package tests;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.StringReader;
 import java.util.HashMap;
@@ -8,18 +9,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.junit.jupiter.api.Test;
-
 import lab1.Grammar;
 import lab1.ParseException;
 import lab1.SimpleNode;
 import semantic.Visitor;
 
-class SyntaxTest {
-
-	@Test
-	void test() {
-		StringReader in=new StringReader("a:= 0;if (a==0) then a:=1; else a:=2;");
+public class Test {
+	void IF4() {
+		
+		StringReader in=new StringReader("a:= 0;if (((a == 0) ^ (a == 0)) ^  ((a == 0) ^ (a == 0))) then a:=1; else a:=2;");
 		Grammar g =new Grammar(in);
 		
 		HashMap<String, Integer> map_correct = new HashMap<>(){{
@@ -45,10 +43,4 @@ class SyntaxTest {
 		}
 		
 	}
-	
-	@Test
-	void AExp() {
-		assertEquals(1, 1);
-	}
-
 }

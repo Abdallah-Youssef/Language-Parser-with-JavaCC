@@ -97,7 +97,7 @@ void BExp():
 	
 	|
 
-	LOOKAHEAD(3)
+	LOOKAHEAD(< OP> AExp() < EQUAL >)
 	< OP> AExp() < EQUAL > AExp() <CL >
 	{  jjtThis.jjtSetValue("==");}
 	
